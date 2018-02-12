@@ -64,6 +64,6 @@ TX 4. Bob shares the transaction hash as proof. Alice can now interact on Atomic
 
 Secret = 0x2c89acde3c71b0338c3a2b3c9b0e3686f844e25d6394c14825d0bb9172df344b
 
-TX 5. Now the secret is public. [Bob uses it to get his StuBucks] (https://kovan.etherscan.io/tx/0x4ad5128d51dd902c1dea44da09746827bbadf25edc48d60099bd72eab7792cb6)
+TX 5. Now the secret is public. [Bob uses it to get his StuBucks](https://kovan.etherscan.io/tx/0x4ad5128d51dd902c1dea44da09746827bbadf25edc48d60099bd72eab7792cb6)
 
 The swap is complete!!!
