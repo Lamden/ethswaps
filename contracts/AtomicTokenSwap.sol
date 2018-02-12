@@ -41,7 +41,7 @@ contract AtomicTokenSwap {
         token.transferFrom(msg.sender, this, _value);
 
         // create the new swap
-        swaps[_hash] = Swap(_expiration, msg.sender, _participant, _value, _token, true);
+        swaps[_hash] = Swap(_expiration, msg.sender, _participant, _token, _value, true);
     }
     
     function redeem(bytes32 _secret) public {
@@ -56,7 +56,7 @@ contract AtomicTokenSwap {
         // clean up and send
         s.exists = false;
         ERC20 token = ERC20(s.token);
-        token.transferFrom(msg.sender, s.value);
+        token.transfer(msg.sender, s.value);
     }
     
     function refund(bytes20 _hash) public {
@@ -66,6 +66,6 @@ contract AtomicTokenSwap {
         
         s.exists = false;
         ERC20 token = ERC20(s.token);
-        token.transferFrom(msg.sender, s.value);
+        token.transfer(msg.sender, s.value);
     }
 }
