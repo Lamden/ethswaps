@@ -57,3 +57,13 @@ TX 1: [Alice allows AtomicTokenSwap to spend 100 Stubucks](https://kovan.ethersc
 TX 2: [Alice adds a swap to AtomicTokenSwap.](https://kovan.etherscan.io/tx/0x61860c8177bc9b57d8f1e32962209f253b30857a4eb924025b8f77845b51a694)
 
 Expires @ 1518559200, Hash lock = 0x7e4872d4d83a8544dd0931f8fa4fe00f67dd4b1a, Participant = 0x123c0b3d044fee5416f1dc6eae9bf53b8ca692e3, Token = 0x519e2e07a675362d2f2bfa0f809d70ab8770f0c2, Amount = 100000000000000000000 (100^18 because of 18 decimals)
+
+TX 3: Alice shares the transaction hash as proof. [Bob can pull the hash lock from here to build his swap transaction to AtomicSwap.](https://kovan.etherscan.io/tx/0xe89bc468d30d10da93bd503001aeb382682d9985b42d098bc5750ddc9ca3a853)
+
+TX 4. Bob shares the transaction hash as proof. Alice can now interact on AtomicSwap to redeem the Ether. [All she has to do is send the secret to AtomicSwap and the contract will handle the rest](https://kovan.etherscan.io/tx/0x2a7ff4e9e5ef12da9c4229a40a5435bbcfad68b96d2fd227ca1b9d55702c6b56)
+
+Secret = 0x2c89acde3c71b0338c3a2b3c9b0e3686f844e25d6394c14825d0bb9172df344b
+
+TX 5. Now the secret is public. [Bob uses it to get his] StuBucks(https://kovan.etherscan.io/tx/0x4ad5128d51dd902c1dea44da09746827bbadf25edc48d60099bd72eab7792cb6)
+
+The swap is complete!!!
