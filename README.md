@@ -43,3 +43,17 @@ An atomic swap works like this:
 - Let's assume Alice made the transaction for 50 StuBucks instead. Well... Bob makes the transaction second, so he doesn't have to make the transaction until he confirms that Alice is legit!
 
 Thus, trustless decentralized swaps.
+
+### Real Life Example on Kovan
+
+Alice = 0xabc028d3fdccbc6791812c9bd483feac32d6c42d
+
+Bob = 0x123c0b3d044fee5416f1dc6eae9bf53b8ca692e3
+
+Swap terms: 100 StuBucks for 1 Ether
+
+TX 1: [Alice allows AtomicTokenSwap to spend 100 Stubucks](https://kovan.etherscan.io/tx/0xf14bc94022f9a8f2aaaf99a93e451747398d3c291f547c3d82f783c6caa434b1)
+
+TX 2: [Alice adds a swap to AtomicTokenSwap.](https://kovan.etherscan.io/tx/0x61860c8177bc9b57d8f1e32962209f253b30857a4eb924025b8f77845b51a694)
+
+Expires @ 1518559200, Hash lock = 0x7e4872d4d83a8544dd0931f8fa4fe00f67dd4b1a, Participant = 0x123c0b3d044fee5416f1dc6eae9bf53b8ca692e3, Token = 0x519e2e07a675362d2f2bfa0f809d70ab8770f0c2, Amount = 100000000000000000000 (100^18 because of 18 decimals)
