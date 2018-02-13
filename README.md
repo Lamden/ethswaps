@@ -74,7 +74,7 @@ The swap is complete!!!
 
 [Bob broadcasts the swap: 500 StuBucksDark with a hashlock](https://kovan.etherscan.io/tx/0x683e4b78a1409ea24fe1cfeb6aef94f3ea7a0515e2ed633fc7ba001dc6571a5e)
 
-Alice approves 100 StuBucks for swap (https://kovan.etherscan.io/tx/0x6cec836cccf746c9605050b565936119702722ce0fa5457dc88a7575f0c7b90b)
+[Alice approves 100 StuBucks for swap](https://kovan.etherscan.io/tx/0x6cec836cccf746c9605050b565936119702722ce0fa5457dc88a7575f0c7b90b)
 
 [Alice broadcasts the swap: 100 StuBucks with a hashlock](https://kovan.etherscan.io/tx/0x399bd3d9fb42381cc3cd69032785174ad514be51b978d704a283ff9565bf6c0d)
 
