@@ -1,19 +1,6 @@
 # Ethereum Atomic Swaps
+
 #### Support for cross-chain and decentralized atomic swaps on Ethereum and Ethereum based chains
-
-### Pure ERC20 <-> ERC20 Swap
-
-[Bob approves 500 StuBucksDark for swap](https://kovan.etherscan.io/tx/0x5d6d63ca969c1d6a28f6e333f93d62ffaf46b3c3c623214bd06365d0f494c409)
-
-[Bob broadcasts the swap: 500 StuBucksDark with a hashlock](https://kovan.etherscan.io/tx/0x683e4b78a1409ea24fe1cfeb6aef94f3ea7a0515e2ed633fc7ba001dc6571a5e)
-
-[Alice approves 100 StuBucks for swap](https://kovan.etherscan.io/tx/0x6cec836cccf746c9605050b565936119702722ce0fa5457dc88a7575f0c7b90b)
-
-[Alice broadcasts the swap: 100 StuBucks with a hashlock](https://kovan.etherscan.io/tx/0x399bd3d9fb42381cc3cd69032785174ad514be51b978d704a283ff9565bf6c0d)
-
-[Bob redeems and gets 100 StuBucks from Alice](https://kovan.etherscan.io/tx/0xeaf58fd2d770c0b5217ffa235f285d25aae43f113d3cb65aea32d622744974b4)
-
-[Alice can now see the secret and redeems and gets 500 StuBucksDark](https://kovan.etherscan.io/tx/0x9f9e29d18d9cdda5640579eedd0adc5b011577df04120e7a51c2ccca93a8e211)
 
 AtomicSwap.sol is deployed to Kovan: https://kovan.etherscan.io/address/0x9f7e5402ed0858ea0c5914d44b900a42c89547b8#code
 AtomicTokenSwap.sol is deployed to Kovan: https://kovan.etherscan.io/address/0x7657ca877fac31d20528b473162e39b6e152fd2e#code
@@ -57,6 +44,20 @@ An atomic swap works like this:
 - Let's assume Alice made the transaction for 50 StuBucks instead. Well... Bob makes the transaction second, so he doesn't have to make the transaction until he confirms that Alice is legit!
 
 Thus, trustless decentralized swaps.
+
+### Pure ERC20 <-> ERC20 Swap
+
+[Bob approves 500 StuBucksDark for swap](https://kovan.etherscan.io/tx/0x5d6d63ca969c1d6a28f6e333f93d62ffaf46b3c3c623214bd06365d0f494c409)
+
+[Bob broadcasts the swap: 500 StuBucksDark with a hashlock](https://kovan.etherscan.io/tx/0x683e4b78a1409ea24fe1cfeb6aef94f3ea7a0515e2ed633fc7ba001dc6571a5e)
+
+[Alice approves 100 StuBucks for swap](https://kovan.etherscan.io/tx/0x6cec836cccf746c9605050b565936119702722ce0fa5457dc88a7575f0c7b90b)
+
+[Alice broadcasts the swap: 100 StuBucks with a hashlock](https://kovan.etherscan.io/tx/0x399bd3d9fb42381cc3cd69032785174ad514be51b978d704a283ff9565bf6c0d)
+
+[Bob redeems and gets 100 StuBucks from Alice](https://kovan.etherscan.io/tx/0xeaf58fd2d770c0b5217ffa235f285d25aae43f113d3cb65aea32d622744974b4)
+
+[Alice can now see the secret and redeems and gets 500 StuBucksDark](https://kovan.etherscan.io/tx/0x9f9e29d18d9cdda5640579eedd0adc5b011577df04120e7a51c2ccca93a8e211)
 
 ### Real Life Example on Kovan
 
