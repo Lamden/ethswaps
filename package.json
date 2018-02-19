@@ -1,0 +1,30 @@
+{
+  "name": "lamden-atomic-swaps",
+  "version": "0.1.0",
+  "description": "",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test",
+    "coverage": "solidity-coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lamden/ethswaps.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lamden/ethswaps/issues"
+  },
+  "homepage": "https://github.com/Lamden/ethswaps#readme",
+  "devDependencies": {
+    "solc": "^0.4.20",
+    "solidity-coverage": "^0.4.9",
+    "solidity-parser": "^0.4.0",
+    "truffle": "^4.0.6",
+    "web3": "^1.0.0-beta.30"
+  }
+}
