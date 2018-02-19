@@ -1,13 +1,14 @@
 {
-  "name": "lamden-atomic-token-swaps",
+  "name": "lamden-atomic-swaps",
   "version": "0.1.0",
   "description": "",
   "main": "truffle.js",
   "directories": {
-    "test": "tests"
+    "test": "test"
   },
   "scripts": {
-    "test": "truffle test"
+    "test": "truffle test",
+    "coverage": "solidity-coverage"
   },
   "repository": {
     "type": "git",

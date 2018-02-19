@@ -4,7 +4,7 @@ module.exports = {
   skipFiles: [
       'ERC20.sol',
       'ERC20Basic.sol',
-      'AtomicSwap.sol',
+      'TestToken.sol',
       'helpers/Migrations.sol'
   ]
 }
