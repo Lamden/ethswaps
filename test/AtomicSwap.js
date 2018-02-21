@@ -16,7 +16,7 @@ contract("AtomicSwap", (accounts) => {
   it('should create a swap', async () => {
     const instance = await atomicSwap.deployed();
     
-    await instance.initiate(now + day, hashLock, other, {value: 10e18});
+    await instance.initiate(now, hashLock, other, {value: 10e18});
 
     const {1: initiator, 2: participant, 3: value, 4: exists} = await instance.swaps(other, hashLock);
 
@@ -29,7 +29,7 @@ contract("AtomicSwap", (accounts) => {
   it('should fail if a swap already exists for that lock', async () => {
     try {
       const instance = await atomicSwap.deployed();
-      await instance.initiate(now + day, hashLock, other, {value: 10e18});
+      await instance.initiate(now, hashLock, other, {value: 10e18});
     } catch (error) {
       assert.equal(error.message, 'VM Exception while processing transaction: revert');
     }
@@ -53,18 +53,41 @@ contract("AtomicSwap", (accounts) => {
     }
   });
 
+  it('should fail to redeem if the swap expired', async () => {
+    try {
+      const instance = await atomicSwap.deployed();
+      await instance.redeem(secret, {from: other});
+    } catch (error) {
+      assert.equal(error.message, 'VM Exception while processing transaction: revert');
+    }
+  });
+
+  it('should fail to redeem if swap already refunded or redeemed', async () => {
+    try {
+      const instance = await atomicSwap.deployed();
+      // refund old swap so we can create a new one and redeem it
+      await instance.refund(hashLock, other);
+
+      await instance.redeem(secret, {from: other});
+    } catch (error) {
+      assert.equal(error.message, 'VM Exception while processing transaction: revert');
+    }
+  });
+
   it('should let you redeem your ether from the swap', async () => {
     const instance = await atomicSwap.deployed();
-
+    
+    await instance.initiate(now + 10, hashLock, other, {value: 10e18});
+    
     const prevBalance = await web3.eth.getBalance(other);
 
     await instance.redeem(secret, {from: other});
-    
+
     const balance = await web3.eth.getBalance(other);
 
     const {4: exists} = await instance.swaps(other, hashLock);
   
-    assert.equal(balance.sub(prevBalance).valueOf(), 10e18);
+    assert.equal(Math.ceil(web3.fromWei(balance.sub(prevBalance).valueOf(), 'ether')), 10);
 
     assert.equal(exists, false);
   });
@@ -90,6 +113,9 @@ contract("AtomicSwap", (accounts) => {
   it(`should not refund if exipration time was not met`, async () => {
     try {
       const instance = await atomicSwap.deployed();
+
+      await instance.initiate(now + day, hashLock, other, {value: 10e18});
+
       await instance.refund(hashLock, other);
     } catch (error) {
       assert.equal(error.message, 'VM Exception while processing transaction: revert');
@@ -100,9 +126,22 @@ contract("AtomicSwap", (accounts) => {
     try {
       const instance = await atomicSwap.deployed();
 
+      await instance.refund(hashLock, other, {from: notInitiator});
+    } catch (error) {
+      assert.equal(error.message, 'VM Exception while processing transaction: revert');
+    }
+  });
+
+  it('should not refund if swap was already redeemed or refunded', async () => {
+    try {
+      const instance = await atomicSwap.deployed();
+
+      await timeTravel(day);
       await timeTravel(day);
 
-      await instance.refund(hashLock, other, {from: notInitiator});
+      await instance.refund(hashLock, other);
+
+      await instance.refund(hashLock, other);
     } catch (error) {
       assert.equal(error.message, 'VM Exception while processing transaction: revert');
     }
@@ -113,13 +152,13 @@ contract("AtomicSwap", (accounts) => {
 
     const beforeBalance = await web3.eth.getBalance(owner);
 
+    await instance.initiate(now + 10, hashLock, other, {value: 10e18});
     await timeTravel(day);
 
     await instance.refund(hashLock, other);
 
-    const balance = await web3.eth.getBalance(other);
-
-    assert.equal(balance.sub(beforeBalance).valueOf(), 10e18);
+    const balance = await web3.eth.getBalance(owner);
+    assert.equal(Math.ceil(web3.fromWei(balance.sub(beforeBalance), 'ether').valueOf()), 0);
     
   });
 });

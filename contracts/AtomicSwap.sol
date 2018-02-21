@@ -30,7 +30,11 @@ contract AtomicSwap {
         
         // make sure it's the right sender
         require(msg.sender == s.participant);
-        
+        // make sure it was not yet redeemed or refunded
+        require(s.exists);
+        // make sure the swap did not expire
+        require(now < s.expiration);
+
         // clean up and send
         s.exists = false;
         msg.sender.transfer(s.value);
@@ -40,6 +44,7 @@ contract AtomicSwap {
         Swap storage s = swaps[_participant][_hash];
         require(now > s.expiration);
         require(msg.sender == s.initiator);
+        require(s.exists);
         
         s.exists = false;
         msg.sender.transfer(s.value);
