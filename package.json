@@ -7,6 +7,8 @@
     "test": "test"
   },
   "scripts": {
+    "pretest": "testrpc -a 10 > /dev/null 2>&1 &",
+    "posttest": "killall -9 node",
     "test": "truffle test",
     "coverage": "solidity-coverage"
   },

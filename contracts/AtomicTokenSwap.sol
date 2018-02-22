@@ -52,7 +52,10 @@ contract AtomicTokenSwap {
         
         // make sure it's the right sender
         require(msg.sender == s.participant);
-        
+        // make sure the swap did not expire already
+        require(now < s.expiration);
+        // make sure the swap was not redeemed or refunded
+        require(s.exists);
         // clean up and send
         s.exists = false;
         ERC20 token = ERC20(s.token);
@@ -63,7 +66,9 @@ contract AtomicTokenSwap {
         Swap storage s = swaps[_participant][_hash];
         require(now > s.expiration);
         require(msg.sender == s.initiator);
-        
+        // make sure the swap was not redeemed or refunded
+        require(s.exists);
+
         s.exists = false;
         ERC20 token = ERC20(s.token);
         token.transfer(msg.sender, s.value);
