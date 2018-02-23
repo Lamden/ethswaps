@@ -2,6 +2,8 @@
 
 #### Support for cross-chain and decentralized atomic swaps on Ethereum and Ethereum based chains
 
+![tests](https://raw.githubusercontent.com/Lamden/ethswaps/master/tests.png)
+
 AtomicSwap.sol is deployed to Kovan: https://kovan.etherscan.io/address/0x9f7e5402ed0858ea0c5914d44b900a42c89547b8#code
 AtomicTokenSwap.sol is deployed to Kovan: https://kovan.etherscan.io/address/0x7657ca877fac31d20528b473162e39b6e152fd2e#code
 
