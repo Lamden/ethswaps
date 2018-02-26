@@ -1,4 +1,4 @@
-const atomicTokenSwap = artifacts.require("./AtomicTokenSwap.sol");
+const atomicSwap = artifacts.require("./AtomicSwapTest.sol");
 const testToken = artifacts.require("./TestToken.sol");
 const timeTravel = require("./helpers/timeTravel");
 
@@ -14,189 +14,199 @@ contract("AtomicTokenSwap", (accounts) => {
     now = web3.eth.getBlock(web3.eth.blockNumber).timestamp;
   });
 
-  it('should fail to initiate if token transfer was not authorized', async () => {
-    const instance = await atomicTokenSwap.deployed();
-    const token = await testToken.deployed();
+  afterEach(async () => {
+    const instance = await atomicSwap.deployed();
 
+    await instance.clearSwap(hashLock, other);
+  });
+
+  it('should not initiate if expiration is in the past', async () => {
     try {
-      await instance.initiate(now, hashLock, other, token.address, 10e19);
+      const instance = await atomicSwap.deployed();
+      const token = await testToken.deployed();
+      
+      await token.approve(instance.address, 100);
+
+      await instance.initiate(now - 10, hashLock, other, token.address, true, 100);
     } catch (error) {
       assert.equal(error.message, 'VM Exception while processing transaction: revert');
     }
-  })
+  });
 
-  it('should initiate a swap if token transfer was authoirzed', async () => {
-    const instance = await atomicTokenSwap.deployed();
+  it('should not initiate if a swap already existst with that lock', async () => {
+    try {
+      const instance = await atomicSwap.deployed();
+      const token = await testToken.deployed();
+      
+      await token.approve(instance.address, 100);
+      await instance.initiate(now + day, hashLock, other, token.address, true, 100);
+
+      await token.approve(instance.address, 100);
+      await instance.initiate(now + day, hashLock, other, token.address, true, 100);
+    } catch (error) {
+      assert.equal(error.message, 'VM Exception while processing transaction: revert');
+    }
+  });
+
+  it(`should not initiate if the tokens we're not approved`, async () => {
+    try {
+      const instance = await atomicSwap.deployed();
+      const token = await testToken.deployed();
+      
+      await instance.initiate(now + day, hashLock, other, token.address, true, 100);
+    } catch (error) {
+      assert.equal(error.message, 'VM Exception while processing transaction: revert');
+    }
+  });
+
+  it(`should not initiate if a different ammount of tokens we're approved`, async () => {
+    try {
+      const instance = await atomicSwap.deployed();
+      const token = await testToken.deployed();
+      
+      await token.approve(instance.address, 50);
+      await instance.initiate(now + day, hashLock, other, token.address, true, 100);
+    } catch (error) {
+      assert.equal(error.message, 'VM Exception while processing transaction: revert');
+    }
+  });
+
+  it('should initiate a swap with valid data', async () => {
+    const instance = await atomicSwap.deployed();
     const token = await testToken.deployed();
-  
+    
     await token.approve(instance.address, 100);
-
-    await instance.initiate(now, hashLock, other, token.address, 100);
-
-    const {1: initiator, 2: participant, 4: value, 5: exists} = await instance.swaps(other, hashLock);
+    await instance.initiate(now + day, hashLock, other, token.address, true, 100);
+    const {1: initiator, 2: participant, 3: value, 4: isToken, 6: exists} = await instance.swaps(other, hashLock);
 
     assert.equal(initiator, owner);
     assert.equal(participant, other);
     assert.equal(value, 100);
+    assert.equal(isToken, true);
     assert.equal(exists, true);
   });
 
-  it(`should fail to initiate given there's already a swap with the same hash lock`, async () => {
+  it('should not redeem if the secret is invalid', async () => {
     try {
-      const instance = await atomicTokenSwap.deployed();
+      const instance = await atomicSwap.deployed();
       const token = await testToken.deployed();
-    
+      
       await token.approve(instance.address, 100);
-
-      await instance.initiate(now, hashLock, other, token.address, 100);
+      await instance.initiate(now + day, hashLock, other, token.address, true, 100);
+      
+      await instance.redeem("<wrong-secret>", {from: other});
     } catch (error) {
       assert.equal(error.message, 'VM Exception while processing transaction: revert');
     }
   });
 
-  it(`should fail to redeem if swap doesn't exist`, async () => {
+  it('should not redeem if the sender is not the participant', async () => {
     try {
-      const instance = await atomicTokenSwap.deployed();
-      await instance.redeem("some-inexistent-secret");
-    } catch (error) {
-      assert.equal(error.message, 'VM Exception while processing transaction: revert');
-    }
-  });
-
-  it (`should fail to redeem if the message sender is not the swap participant`, async () => {
-    try {
-      const instance = await atomicTokenSwap.deployed();
+      const instance = await atomicSwap.deployed();
+      const token = await testToken.deployed();
+      
+      await token.approve(instance.address, 100);
+      await instance.initiate(now + day, hashLock, other, token.address, true, 100);
+      
       await instance.redeem(secret);
     } catch (error) {
       assert.equal(error.message, 'VM Exception while processing transaction: revert');
     }
   });
 
-  it('should fail to redeem if swap was already redeemed or refunded', async () => {
+  it('should not redeem if the swap expired', async () => {
     try {
-      const instance = await atomicTokenSwap.deployed();
+      const instance = await atomicSwap.deployed();
       const token = await testToken.deployed();
-
-      await instance.refund(hashLock, other);
-
+      
       await token.approve(instance.address, 100);
-    
-      await instance.initiate(now + 10, hashLock, other, token.address, 100);
-
-      await instance.redeem(secret, {from: other});
-
+      await instance.initiate(now + day, hashLock, other, token.address, true, 100);
+      
+      await timeTravel(day + 100);
+      
       await instance.redeem(secret, {from: other});
     } catch (error) {
       assert.equal(error.message, 'VM Exception while processing transaction: revert');
     }
   });
 
-  it ('should fail to redeem if swap expired', async () => {
-    try {
-      const instance = await atomicTokenSwap.deployed();
-      const token = await testToken.deployed();
-      
-      await token.approve(instance.address, 100);
-      
-      await instance.initiate(now, hashLock, other, token.address, 100);
-      
-      await timeTravel(day);
-      await timeTravel(day);
-
-      await instance.redeem(secret, {from: other});
-    } catch (error) {
-      assert.equal(error.message, 'VM Exception while processing transaction: revert');
-    }
-  });
-
-  it('should let you redeem your tokens from the swap', async () => {
-    const instance = await atomicTokenSwap.deployed();
+  it('should redeem if valid data is provided', async () => {
+    const instance = await atomicSwap.deployed();
     const token = await testToken.deployed();
-    // refund expired swap from previous test
-    await instance.refund(hashLock, other);
     
-    const beforeBalance = await token.balanceOf(other);
-    //approve and initiate new swap
     await token.approve(instance.address, 100);
+    const beforeBalance = await token.balanceOf(other);
+
+    await instance.initiate(now + day, hashLock, other, token.address, true, 100);
     
-    await instance.initiate(now + 10, hashLock, other, token.address, 100);
-
     await instance.redeem(secret, {from: other});
+    
+    const afterBalance = await token.balanceOf(other);
 
-    const balance = await token.balanceOf(other);
-    const {5: exists} = await instance.swaps(other, hashLock);
-
-    assert.equal(balance.sub(beforeBalance).toNumber(), 100);
-    assert.equal(exists, false);
+    assert.equal(afterBalance - beforeBalance, 100);
   });
 
-  it(`should not refund if swap doesn't exist for participant`, async () => {
+  it('should not refund if swap is still active', async () => {
     try {
-      const instance = await atomicTokenSwap.deployed();
-      await instance.refund(hashLock, owner);
-    } catch (error) {
-      assert.equal(error.message, 'VM Exception while processing transaction: revert');
-    }
-  });
-
-  it(`should not refund with invalid swap secret`, async () => {
-    try {
-      const instance = await atomicTokenSwap.deployed();
-      await instance.refund("wrong-hash-lock", other);
-    } catch (error) {
-      assert.equal(error.message, 'VM Exception while processing transaction: revert');
-    }
-  });
-
-  it(`should not refund if exipration time was not met`, async () => {
-    try {
-      const instance = await atomicTokenSwap.deployed();
+      const instance = await atomicSwap.deployed();
+      const token = await testToken.deployed();
+      
+      await token.approve(instance.address, 100);
+      await instance.initiate(now + day, hashLock, other, token.address, true, 100);
+      
       await instance.refund(hashLock, other);
     } catch (error) {
       assert.equal(error.message, 'VM Exception while processing transaction: revert');
     }
   });
-
-  it('should not refund if swap already redeemed or refunded', async () => {
+  
+  it('should not refund if the sender is not the initiator', async () => {
     try {
-      const instance = await atomicTokenSwap.deployed();
-      await timeTravel(day);
-      await instance.refund(hashLock, other);
-      await instance.refund(hashLock, other);
-    } catch (error) {
-      assert.equal(error.message, 'VM Exception while processing transaction: revert');
-    }
-  });
-
-  it(`should not refund if refundee is not the initiator`, async () => {
-    try {
-      const instance = await atomicTokenSwap.deployed();
-
-      await timeTravel(day);
-
+      const instance = await atomicSwap.deployed();
+      const token = await testToken.deployed();
+      
+      await token.approve(instance.address, 100);
+      await instance.initiate(now + day, hashLock, other, token.address, true, 100);
+      await timeTravel(day + 100);
+      
       await instance.refund(hashLock, other, {from: notInitiator});
     } catch (error) {
       assert.equal(error.message, 'VM Exception while processing transaction: revert');
     }
   });
 
-  it(`should refund if all requirements are met`, async () => {
-    const instance = await atomicTokenSwap.deployed();
+  it('should not refund if the swap was already redeemed', async () => {
+    try {
+      const instance = await atomicSwap.deployed();
+      const token = await testToken.deployed();
+      
+      await token.approve(instance.address, 100);
+      await instance.initiate(now + day, hashLock, other, token.address, true, 100);
+      
+      await instance.redeem(secret, {from: other});
+
+      await timeTravel(day + 100);
+      
+      await instance.refund(hashLock, other);
+    } catch (error) {
+      assert.equal(error.message, 'VM Exception while processing transaction: revert');
+    }
+  });
+
+  it('should refund if valid data is provided', async () => {
+    const instance = await atomicSwap.deployed();
     const token = await testToken.deployed();
 
     const beforeBalance = await token.balanceOf(owner);
-
-    //approve and initiate new swap
-    await token.approve(instance.address, 100);
     
-    await instance.initiate(now, hashLock, other, token.address, 100);
+    await token.approve(instance.address, 100);
+    await instance.initiate(now + day, hashLock, other, token.address, true, 100);
 
-    await timeTravel(day);
-
+    await timeTravel(day + 100);
     await instance.refund(hashLock, other);
 
-    const balance = await token.balanceOf(owner);
+    const afterBalance = await token.balanceOf(owner);
 
-    assert.equal(balance.toNumber(), beforeBalance.toNumber() + 100);
+    assert.equal(afterBalance - beforeBalance, 0);
   });
 });
