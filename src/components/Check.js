@@ -111,7 +111,7 @@ export default class Check extends Component {
         <h2>Check Atomic Swap</h2>
         {this.state.success && <h4 style={{color: '#00ff00'}}>Found swap.</h4>}
         {this.state.error && <h4 style={{color: '#ff0000'}}>Something wrong happened.</h4>}
-        {this.state.procssing && <h4>Please be patient, we're processing your transaction.</h4>}
+        {this.state.procssing && <h4>Please be patient, we are processing your transaction.</h4>}
         <form className="pure-form pure-form-aligned">
           <fieldset>
              <div className="pure-control-group">
