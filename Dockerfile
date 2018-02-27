@@ -12,6 +12,8 @@ COPY . /usr/lamden/swaps
 
 RUN npm install
 
+RUN npm install -g truffle
+
 RUN truffle compile
 
 RUN npm run build
