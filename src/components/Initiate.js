@@ -23,6 +23,8 @@ export default class Initiate extends Component {
       },
       success: false,
       error: false,
+      transaction: null,
+      processing: false,
     }
   }
   async getNow() {
@@ -32,7 +34,7 @@ export default class Initiate extends Component {
     return block.timestamp;
   }
   async componentDidMount() {
-    if (this.props.web3) {
+    if (this.props.web3 && this.props.account && this.props.instance) {
       this.setState({values: {expiration: await this.getNow() + 86400}});
     }
   }
@@ -95,6 +97,7 @@ export default class Initiate extends Component {
       return this.setState({errors: messages});
     }
     const values = this.state.values;
+    this.setState({processing: true});
     try {
       console.log(
         values.expiration,
@@ -121,10 +124,10 @@ export default class Initiate extends Component {
         },
       );
       console.log(data);
-      this.setState({success: true});
+      this.setState({success: true, transaction: data, processing: false});
     } catch (error) {
       console.log(error);
-      this.setState({error: true});
+      this.setState({error: true, processing: false});
     }
   }
 
@@ -132,8 +135,9 @@ export default class Initiate extends Component {
     return (
       <div className="action-container pure-u-1-10 offset-1-8">
         <h2>Initate Atomic Swap</h2>
-        {this.state.success && <h4 style={{color: '#00ff00'}}>Swap succesfully initiated</h4>}
+        {this.state.success && <h4 style={{color: '#00ff00'}}>Swap succesfully initiated.  <a href={`https://kovan.etherscan.io/tx/${this.state.transaction.tx}`}>{this.state.transaction.tx}</a></h4>}
         {this.state.error && <h4 style={{color: '#ff0000'}}>Something wrong happened.</h4>}
+        {this.state.procssing && <h4>Please be patient, we are processing your transaction.</h4>}
         <form className="pure-form pure-form-aligned">
           <fieldset>
             <div className="pure-control-group">
