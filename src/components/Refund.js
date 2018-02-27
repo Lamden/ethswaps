@@ -16,7 +16,8 @@ export default class Refund extends Component {
       },
       success: false,
       error: false,
-      transaction: null
+      processing: false,
+      transaction: null,
     }
   }
 
@@ -59,6 +60,7 @@ export default class Refund extends Component {
       return this.setState({errors: messages});
     }
     const values = this.state.values;
+    this.setState({processing: true});
     try {
       console.log(
         values.lock,
@@ -67,6 +69,7 @@ export default class Refund extends Component {
           from: this.props.account,
         },
       );
+
       const data = await this.props.instance.redeem(
         values.lock,
         values.participant,
@@ -75,11 +78,11 @@ export default class Refund extends Component {
         },
       );
 
-      this.setState({success: true, transaction: data});
+      this.setState({success: true, transaction: data, processing: false});
       console.log(data);
     } catch (error) {
       console.log(error);
-      this.setState({error: true});
+      this.setState({error: true, processing: false});
     }
   }
 
@@ -89,6 +92,7 @@ export default class Refund extends Component {
         <h2>Refund Atomic Swap</h2>
         {this.state.success && <h4 style={{color: '#00ff00'}}>Swap succesfully refunded.  <a href={`https://kovan.etherscan.io/tx/${this.state.transaction.tx}`}>{this.state.transaction.tx}</a></h4>}
         {this.state.error && <h4 style={{color: '#ff0000'}}>Something wrong happened.</h4>}
+        {this.state.procssing && <h4>Please be patient, we're processing your transaction.</h4>}
         <form className="pure-form pure-form-aligned">
           <fieldset>
              <div className="pure-control-group">

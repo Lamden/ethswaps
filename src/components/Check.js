@@ -16,6 +16,7 @@ export default class Check extends Component {
       },
       success: false,
       error: false,
+      procssing: false,
       data: {
         expiration: null,
         initiator: null,
@@ -67,6 +68,7 @@ export default class Check extends Component {
       return this.setState({errors: messages});
     }
     const values = this.state.values;
+    this.setState({processing: true});
     try {
       console.log(
         values.lock,
@@ -82,7 +84,7 @@ export default class Check extends Component {
           from: this.props.account,
         },
       );
-
+      
       this.setState({
         success: true,
         data: {
@@ -93,11 +95,12 @@ export default class Check extends Component {
           isToken: data[4],
           token: data[5],
           exists: data[6]
-        }
+        },
+        processing: false
       });
     } catch (error) {
       console.log(error);
-      this.setState({error: true});
+      this.setState({error: true, processing: false});
     }
   }
 
@@ -108,6 +111,7 @@ export default class Check extends Component {
         <h2>Check Atomic Swap</h2>
         {this.state.success && <h4 style={{color: '#00ff00'}}>Found swap.</h4>}
         {this.state.error && <h4 style={{color: '#ff0000'}}>Something wrong happened.</h4>}
+        {this.state.procssing && <h4>Please be patient, we're processing your transaction.</h4>}
         <form className="pure-form pure-form-aligned">
           <fieldset>
              <div className="pure-control-group">
