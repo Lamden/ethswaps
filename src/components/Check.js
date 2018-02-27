@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 
-export default class Refund extends Component {
+export default class Check extends Component {
   constructor(props) {
     super(props);
 
@@ -16,7 +16,15 @@ export default class Refund extends Component {
       },
       success: false,
       error: false,
-      transaction: null
+      data: {
+        expiration: null,
+        initiator: null,
+        participant: null,
+        token: null,
+        isToken: null,
+        value: null,
+        exists: null
+      }
     }
   }
 
@@ -67,16 +75,26 @@ export default class Refund extends Component {
           from: this.props.account,
         },
       );
-      const data = await this.props.instance.redeem(
-        values.lock,
+      const data = await this.props.instance.swaps(
         values.participant,
+        values.lock,
         {
           from: this.props.account,
         },
       );
 
-      this.setState({success: true, transaction: data});
-      console.log(data);
+      this.setState({
+        success: true,
+        data: {
+          expiration: data[0].toNumber(),
+          initiator: data[1],
+          participant: data[2],
+          value: data[4] ? data[3].toNumber() : this.props.web3.utils.fromWei(data[3].toString(), 'ether'),
+          isToken: data[4],
+          token: data[5],
+          exists: data[6]
+        }
+      });
     } catch (error) {
       console.log(error);
       this.setState({error: true});
@@ -84,10 +102,11 @@ export default class Refund extends Component {
   }
 
   render() {
+    // console.log(this.state);
     return (
       <div className="action-container pure-u-1-10 offset-1-8">
-        <h2>Refund Atomic Swap</h2>
-        {this.state.success && <h4 style={{color: '#00ff00'}}>Swap succesfully refunded.  <a href={`https://kovan.etherscan.io/tx/${this.state.transaction.tx}`}>{this.state.transaction.tx}</a></h4>}
+        <h2>Check Atomic Swap</h2>
+        {this.state.success && <h4 style={{color: '#00ff00'}}>Found swap.</h4>}
         {this.state.error && <h4 style={{color: '#ff0000'}}>Something wrong happened.</h4>}
         <form className="pure-form pure-form-aligned">
           <fieldset>
@@ -117,9 +136,20 @@ export default class Refund extends Component {
               />
               {this.state.errors.participant && <span className="pure-form-message error pure-u-1-2 aligned-offset">{this.state.errors.participant}</span>}
             </div>
-              <button type="button" onClick={this.handleSubmit} className="pure-button pure-button-primary pure-u-1-2 aligned-offset">Refund</button>
+              <button type="button" onClick={this.handleSubmit} className="pure-button pure-button-primary pure-u-1-2 aligned-offset">Check</button>
           </fieldset>
         </form>
+
+        {this.state.success && 
+        <div>
+          <p><strong>Exipres at:</strong>{this.state.data.expiration}</p>
+          <p><strong>Initiated by:</strong>{this.state.data.initiator}</p>
+          <p><strong>Participant:</strong>{this.state.data.participant}</p>
+          <p><strong>Value:</strong>{this.state.data.value}</p>
+          <p><strong>Is Token:</strong>{this.state.data.isToken ? 'Yes' : 'No'}</p>
+          <p><strong>Token:</strong>{this.state.data.token}</p>
+          <p><strong>Active:</strong>{this.state.data.exists ? 'Yes' : 'No'}</p>
+        </div>}
       </div>
     );
   }

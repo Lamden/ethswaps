@@ -14,6 +14,7 @@ export default class Redeem extends Component {
       },
       success: false,
       error: false,
+      transaction: null
     }
   }
 
@@ -62,7 +63,7 @@ export default class Redeem extends Component {
         },
       );
 
-      this.setState({success: true});
+      this.setState({success: true, transaction: data});
       console.log(data);
     } catch (error) {
       console.log(error);
@@ -74,7 +75,7 @@ export default class Redeem extends Component {
     return (
       <div className="action-container pure-u-1-10 offset-1-8">
         <h2>Redeem Atomic Swap</h2>
-        {this.state.success && <h4 style={{color: '#00ff00'}}>Swap succesfully redeemed.</h4>}
+        {this.state.success && <h4 style={{color: '#00ff00'}}>Swap succesfully redeemed. <a href={`https://kovan.etherscan.io/tx/${this.state.transaction.tx}`}>{this.state.transaction.tx}</a></h4>}
         {this.state.error && <h4 style={{color: '#ff0000'}}>Something wrong happened.</h4>}
         <form className="pure-form pure-form-aligned">
           <fieldset>
