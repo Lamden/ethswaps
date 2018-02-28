@@ -46,8 +46,8 @@ class App extends Component {
     atomicSwap.setProvider(this.state.web3.currentProvider)
 
     const accounts = await this.state.web3.eth.getAccounts();
-    // const instance = await atomicSwap.at("0x96ab491D858e9822B7682E0150D9537bd7C99357");
-    const instance = await atomicSwap.deployed();
+    const instance = await atomicSwap.at("0x96ab491D858e9822B7682E0150D9537bd7C99357");
+    // const instance = await atomicSwap.deployed();
     this.setState({account: accounts[0], instance});
   }
 
