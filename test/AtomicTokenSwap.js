@@ -1,6 +1,7 @@
 const atomicSwap = artifacts.require("./AtomicSwapTest.sol");
 const testToken = artifacts.require("./TestToken.sol");
 const timeTravel = require("./helpers/timeTravel");
+const crypto = require("crypto");
 
 const secretBytes = crypto.randomBytes(32);
 const secret = `0x${secretBytes.toString('hex')}`;
