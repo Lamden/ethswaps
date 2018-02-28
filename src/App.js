@@ -4,6 +4,7 @@ import Initiate from './components/Initiate'
 import Redeem from './components/Redeem'
 import Refund from './components/Refund'
 import Check from './components/Check'
+import Secret from './components/Secret'
 
 import AtomicSwap from '../build/contracts/AtomicSwap.json'
 import getWeb3 from './utils/getWeb3'
@@ -45,8 +46,8 @@ class App extends Component {
     atomicSwap.setProvider(this.state.web3.currentProvider)
 
     const accounts = await this.state.web3.eth.getAccounts();
-    const instance = await atomicSwap.at("0x96ab491D858e9822B7682E0150D9537bd7C99357");
-    
+    // const instance = await atomicSwap.at("0x96ab491D858e9822B7682E0150D9537bd7C99357");
+    const instance = await atomicSwap.deployed();
     this.setState({account: accounts[0], instance});
   }
 
@@ -60,6 +61,7 @@ class App extends Component {
               <li className="pure-menu-item"><Link to="/redeem" className="pure-menu-link">Redeem</Link></li>
               <li className="pure-menu-item"><Link to="/refund" className="pure-menu-link">Refund</Link></li>
               <li className="pure-menu-item"><Link to="/check" className="pure-menu-link">Check Swap</Link></li>
+              <li className="pure-menu-item"><Link to="/secret" className="pure-menu-link">Generate secret</Link></li>
           </ul>
         </nav>
 
@@ -68,6 +70,7 @@ class App extends Component {
           <Route path="/redeem" component={() => <Redeem {...this.state} />} />
           <Route path="/refund" component={() => <Refund {...this.state} />} />
           <Route path="/check" component={() => <Check {...this.state} />} />
+          <Route path="/secret" component={() => <Secret {...this.state} />} />
         </main>
       </div>
     );
