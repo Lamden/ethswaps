@@ -1,8 +1,12 @@
 const atomicSwap = artifacts.require("./AtomicSwapTest.sol");
 const timeTravel = require("./helpers/timeTravel");
+const crypto = require('crypto');
 
-const hashLock = "0x7e4872d4d83a8544dd0931f8fa4fe00f67dd4b1a";
-const secret = "0x2c89acde3c71b0338c3a2b3c9b0e3686f844e25d6394c14825d0bb9172df344b";
+
+const secretBytes = crypto.randomBytes(32);
+const secret = `0x${secretBytes.toString('hex')}`;
+const hashLock = `0x${crypto.createHash("ripemd160").update(secretBytes).digest("hex")}`;
+
 
 contract("Ether Atomic Swaps", (accounts) => {
   const {0: owner, 1: other, 2: notInitiator} = accounts;
